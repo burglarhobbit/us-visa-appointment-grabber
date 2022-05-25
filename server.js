@@ -8,8 +8,8 @@ var app = express();
 
 // Sends alerts when there is a date available before 9/26.
 // Does not deal with years right now.
-var searchBeforeDate = 26;
-var searchBeforeMonth = 9;
+var searchBeforeDate = 30;
+var searchBeforeMonth = 12;
 
 var months = {
   'Jan': 1,
@@ -39,7 +39,8 @@ var sns = new AWS.SNS();
 function callback(error, response, body) {
   if (!error) {
     var $ = cheerio.load(body);
-    var data = $('#appointment_info_table_1').next().text();
+    var data = $('#appointments_consulate_appointment_date_input').next().text();
+    console.log(body);
     var dateReg = /(\w+\s+(\d+)\s+(\w+)\s+\d+)/;
 
     if (typeof data === "undefined" || data === null)
@@ -55,13 +56,13 @@ function callback(error, response, body) {
     } else
       console.log(new Date() + ': Date did not match: ' + data);
   } else
-      sendSMS('Could not load page.');
+    sendSMS('Could not load page.');
 }
 
 function main() {
-  var url = 'https://usvisa-info.com/en-ca/selfservice/p/reschedule_appointment';
+  var url = 'https://ais.usvisa-info.com/en-ca/niv/schedule/33927280/appointment';
   var jar = request.jar();
-  var cookie = request.cookie("_appointment_system_session=" + credentials.appointment_system_session);
+  var cookie = request.cookie("yatri_session=" + credentials.yatri_session);
   jar.setCookie(cookie, url);
 
   var options = {
